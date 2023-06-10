@@ -76,7 +76,66 @@ $(document).ready(function () {
   $("body > div:nth-child(2) > div ").on("click", function () {
     let codigo_celda = $(this).attr("id");
     //* Guardamos el valor de la imagen y el color de la casilla.
-    piezaSeleccionada = codigo_celda;
+    if ($("#" + codigo_celda).css("background-image") !== "none" && piezaSeleccionada === "") {
+      //* Guardamos el valor de la imagen y el color de la casilla.
+      piezaSeleccionada = codigo_celda;
+      color = $("#" + piezaSeleccionada).css("background-color");
+      /* Luego eliminamos el color de esa casilla pero se queda almacenado y cambiamos a amarillo.
+      Esto indica que está seleccionada*/
+      $("#" + codigo_celda).css("background-color", "yellow");
+
+    } else if ($("#" + codigo_celda).css("background-image") === "none" && piezaSeleccionada !== "") {
+      //! Si se hace clic en una casilla vacía y hay pieza seleccionada
+
+      //* Introducir la imagen en la casilla y borrar de la anterior
+      $("#" + codigo_celda).css("background-image", $("#" + piezaSeleccionada).css("background-image"));
+      $("#" + piezaSeleccionada).css("background-image", "none");
+      $("#" + piezaSeleccionada).css("background-color", color);
+      piezaSeleccionada = "";
+      piezaEliminar = "";
+
+
+    } else if ($("#" + codigo_celda).css("background-image") !== "none" &&
+      piezaSeleccionada !== "") {
+      //! Si la casilla de destino está ocupada y tenemos una pieza almacenada
+      if (piezaSeleccionada === codigo_celda) {
+        //* en caso de que la casilla sea la misma 
+        $("#" + codigo_celda).css("background-image", $("#" + piezaSeleccionada).css("background-image"));
+        $("#" + codigo_celda).css("background-color", color);
+        piezaSeleccionada = "";
+        color = "";
+        piezaEliminar = "";
+        ;
+
+      } else if (piezaSeleccionada !== codigo_celda) {
+        /* Si las casillas son diferentes.
+        Buscamos el primer hueco disponible en las piezas eliminadas.*/
+        let divPieza = obtenerDivPiezaDisponible();
+        // Guardamos la casilla de fondo 
+        piezaEliminar = codigo_celda;
+        if ($("#" + piezaEliminar).css("background-image").includes("rn")
+          || $("#" + piezaEliminar).css("background-image").includes("rb")) {
+            $("#" + piezaSeleccionada).css("background-color", color);  
+          alert("Fin partida");
+          piezaSeleccionada = "";
+          color = "";
+          piezaEliminar = "";
+          inicializar();
+        } else {
+          // Añadimos la pieza a los eliminados  
+          $(divPieza).css("background-image", $("#" + piezaEliminar).css('background-image'));
+          /* Ponemos de fondo la imagen de la pieza seleccionada inicialmente
+          restauramos el color y dejamos la casilla vacía*/
+          $("#" + piezaEliminar).css("background-image", $("#" + piezaSeleccionada).css("background-image"));
+          $("#" + piezaSeleccionada).css("background-color", color);
+          $("#" + piezaSeleccionada).css("background-image", "none");
+          piezaSeleccionada = "";
+          color = "";
+          piezaEliminar = "";
+        }
+      }
+
+    }
   });
 
 
